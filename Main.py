@@ -7,6 +7,8 @@ import datetime
 
 class MainWindow():
 	def __init__(self):
+		login = ""
+
 		try:
 			with open('accounts.txt', "r") as file:
 				pass
@@ -95,7 +97,7 @@ class MainWindow():
 				data = accountFile.readlines()
 				accountFile.close()
 				data += name + "," + login + "," + password + ",CLIENT;\n"
-				accountFile = open("accounts.txt", "w")
+				accountFile = open("accounts.txt", "a+")
 				accountFile.writelines(data)
 				accountFile.close()
 				messagebox.showinfo("Success", "Your account has been created.")
@@ -124,15 +126,16 @@ class MainWindow():
 					correctData = True
 
 			if(correctData):
+				self.login = login
 				role = line.split(",")[3]
 				role = role[:-2] #delete ; and \n characters
 
 				if(role == "CLIENT"):
 					self.laundryClientWindow()
-					loginWindow.withdraw()
+					#loginWindow.withdraw()
 				elif(role == "WORKER"):
 					self.laundryWorkerWindow()
-					loginWindow.withdraw()
+					#loginWindow.withdraw()
 				else:
 					messagebox.showerror("Error","There is a problem with role assigned to your account. Please contact with administrator.")
 			else:
@@ -185,12 +188,58 @@ class MainWindow():
 		##alternatively:
 		# tree.insert("", 3, "dir3", text="Dir 3")
 		# tree.insert("dir3", 3, text=" sub dir 3", values=("3A", " 3B"))
-		tree.grid(row=0,column="0")
 
-		ButtonNewOrder = tk.Button(laundryClientWindow, text="New order", width=10, height=1,command=lambda: self.setCollectionMethod())
+
+		self.refreshTree(tree)
+		tree.grid(row=0, column="0")
+
+		ButtonNewOrder = tk.Button(laundryClientWindow, text="New order", width=10, height=1,command=lambda: self.setCollectionMethod(tree))
 		ButtonNewOrder.grid(row=3, column="0")
 
-	def setCollectionMethod(self):
+	def refreshTree(self, tree):
+		ordersFile = open("orders.txt", "r")
+
+		tree.delete(*tree.get_children())
+
+		tree["columns"] = (
+		"Collection method", "Address", "Status", "Weight", "Price", "Collection date", "Delivery date")
+
+		tree.column("Collection method", width=100)
+		tree.column("Address", width=150)
+		tree.column("Status", width=140)
+		tree.column("Weight", width=50)
+		tree.column("Price", width=50)
+		tree.column("Collection date", width=100)
+		tree.column("Delivery date", width=100)
+
+		tree.heading("Collection method", text="Collection method")
+		tree.heading("Address", text="Address")
+		tree.heading("Status", text="Status")
+		tree.heading("Weight", text="Weight")
+		tree.heading("Price", text="Price")
+		tree.heading("Collection date", text="Collection date")
+		tree.heading("Delivery date", text="Delivery date")
+
+		pending = tree.insert("", 0, "Pending orders", text="Pending orders")
+		historyOrders = tree.insert("", 1, "Orders history", text="Orders history")
+
+		# indexHistory = 0
+		# indexPending = 0
+		for line in ordersFile:
+			print(self.login + "  " + (line.split("|")[8])[:-2])
+			if(self.login == (line.split("|")[8])[:-2]):
+				print("jestem")
+				if(line.split("|")[3] == "DONE"):
+					tree.insert(historyOrders, 0, text=line.split("|")[0], values=(line.split("|")[1], line.split("|")[2], line.split("|")[3], line.split("|")[4], line.split("|")[5], line.split("|")[6], line.split("|")[7]))
+					# indexHistory += 1
+				else:
+					tree.insert(pending, 0, text=line.split("|")[0], values=(line.split("|")[1], line.split("|")[2], line.split("|")[3], line.split("|")[4], line.split("|")[5], line.split("|")[6], line.split("|")[7]))
+					# indexPending += 1
+
+
+
+
+	def setCollectionMethod(self, tree):
 		newOrderWindow = tk.Toplevel()
 		newOrderWindow.title("New order")
 		self.center(newOrderWindow)
@@ -201,13 +250,13 @@ class MainWindow():
 		self.LabelMethod.grid(row=0, column="1")
 
 
-		self.ButtonDriver = tk.Button(newOrderWindow, text="Book driver", width=10, height=1, command=lambda :self.setOrderAddress("DRIVER", newOrderWindow))
+		self.ButtonDriver = tk.Button(newOrderWindow, text="Book driver", width=10, height=1, command=lambda :self.setOrderAddress("DRIVER", newOrderWindow, tree))
 		self.ButtonDriver.grid(row=1, column="0")
 
-		self.ButtonLocker = tk.Button(newOrderWindow, text="Deliver to locker", width=10, height=1, command=lambda:self.setOrderAddress("LOCKER", newOrderWindow))
+		self.ButtonLocker = tk.Button(newOrderWindow, text="Deliver to locker", width=10, height=1, command=lambda:self.setOrderAddress("LOCKER", newOrderWindow, tree))
 		self.ButtonLocker.grid(row=1, column="2")
 
-	def setOrderAddress(self, method, previousWindow):
+	def setOrderAddress(self, method, previousWindow, tree):
 		previousWindow.destroy()
 
 		orderAddressWindow = tk.Toplevel()
@@ -227,7 +276,7 @@ class MainWindow():
 			rb2.grid(row=2, column="0")
 			rb3.grid(row=3, column="0")
 
-			self.ButtonNext = tk.Button(orderAddressWindow, text="Next", width=10, height=1, command=lambda: self.setOrderDates("LOCKER",temp.get(),orderAddressWindow))
+			self.ButtonNext = tk.Button(orderAddressWindow, text="Next", width=10, height=1, command=lambda: self.setOrderDates("LOCKER",temp.get(),orderAddressWindow, tree))
 			self.ButtonNext.grid(row=4, column="0")
 		elif(method == "DRIVER"):
 			self.LabelAddress = tk.Label(orderAddressWindow, text="Address: ")
@@ -236,10 +285,10 @@ class MainWindow():
 			self.EntryAddress = tk.Entry(orderAddressWindow, width="100")
 			self.EntryAddress.grid(row=0, column="1")
 
-			self.ButtonNext = tk.Button(orderAddressWindow, text="Next", width=10, height=1,command=lambda: self.setOrderDates("DRIVER", self.EntryAddress.get(), orderAddressWindow))
+			self.ButtonNext = tk.Button(orderAddressWindow, text="Next", width=10, height=1,command=lambda: self.setOrderDates("DRIVER", self.EntryAddress.get(), orderAddressWindow, tree))
 			self.ButtonNext.grid(row=4, column="0")
 
-	def setOrderDates(self, method, address, previousWindow):
+	def setOrderDates(self, method, address, previousWindow, tree):
 		previousWindow.destroy()
 
 		orderDatesWindow = tk.Toplevel()
@@ -265,23 +314,25 @@ class MainWindow():
 		# userdatestring = '2013-05-10'
 		# thedate = datetime.datetime.strptime(userdatestring, '%Y-%m-%d')
 
-		self.ButtonFinish = tk.Button(orderDatesWindow, text="Finish", width=10, height=1,command=lambda: self.newOrder(method,address, self.EntryColDate.get(), self.EntryDelDate.get(), orderDatesWindow))
+		self.ButtonFinish = tk.Button(orderDatesWindow, text="Finish", width=10, height=1,command=lambda: self.newOrder(method,address, self.EntryColDate.get(), self.EntryDelDate.get(), orderDatesWindow, tree))
 		self.ButtonFinish.grid(row=2, column="0")
 
-	def newOrder(self,method, address, dateCollection, dateDelivery, previousWindow):
+	def newOrder(self,method, address, dateCollection, dateDelivery, previousWindow, tree):
 		previousWindow.destroy()
 
 		ordersFile = open("orders.txt", "r")
 		tempData = ordersFile.readlines()
 		ordersFile.close()
 
-		tempData += str(len(tempData)+1) +","+ method +","+ address +",Waiting for collection,,," + dateCollection +","+ dateDelivery +";\n"
+		tempData += str(len(tempData)+1) +"|"+ method +"|"+ address +"|Waiting for collection|||" + dateCollection +"|"+ dateDelivery + "|" + self.login + ";\n"
 
 		ordersFile = open("orders.txt", "w")
 		ordersFile.writelines(tempData)
 		ordersFile.close()
 
+		self.refreshTree(tree)
 		messagebox.showinfo("Success", "Your order has been accepted.")
+
 
 
 
