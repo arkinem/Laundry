@@ -95,7 +95,7 @@ class MainWindow():
 				data = accountFile.readlines()
 				accountFile.close()
 				data += name + "," + login + "," + password + ",CLIENT;\n"
-				accountFile = open("accounts.txt", "a+")
+				accountFile = open("accounts.txt", "w")
 				accountFile.writelines(data)
 				accountFile.close()
 				messagebox.showinfo("Success", "Your account has been created.")
