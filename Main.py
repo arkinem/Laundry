@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import messagebox
 from functools import partial
 
 
@@ -58,14 +59,22 @@ class MainWindow():
 		self.EntryPassword = tk.Entry(registerWindow, width="30")
 		self.EntryPassword.grid(row=2, column="1")
 
-		self.ButtonRegister1 = tk.Button(registerWindow, text="Register", width=10, height=1, command=lambda: self.registerAccount(self.EntryName.get(), self.EntryLogin.get(), self.EntryPassword.get()))
+		self.ButtonRegister1 = tk.Button(registerWindow, text="Register", width=10, height=1, command=lambda: self.registerAccount(self.EntryName.get(), self.EntryLogin.get(), self.EntryPassword.get(), registerWindow))
 		self.ButtonRegister1.grid(row=3, column="1")
 
-	def registerAccount(self, name, login, password):
-		if name != "" and login != "":
-			print("Ok")
+	def registerAccount(self, name, login, password, registerWindow):
+		if name != "" and login != "" and password != "":
+			accountFile = open("accounts.txt", "r")
+			data = accountFile.readlines()
+			accountFile.close()
+			data += name + "," + login + "," + password + ",CLIENT;\n"
+			accountFile = open("accounts.txt", "w")
+			accountFile.writelines(data)
+			accountFile.close()
+			messagebox.showinfo("Success", "Your account has been created.")
+			registerWindow.destroy()
 		else:
-			print("Nooo")
+			messagebox.showinfo("Error", "Fields cannot be empty.")
 
 
 
