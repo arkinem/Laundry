@@ -68,8 +68,8 @@ class MainWindow():
 		self.EntryPassword = tk.Entry(registerWindow, width="30", show="*")
 		self.EntryPassword.grid(row=2, column="1")
 
-		self.ButtonRegister1 = tk.Button(registerWindow, text="Register", width=10, height=1, command=lambda: self.registerAccount(self.EntryName.get(), self.EntryLogin.get(), self.EntryPassword.get(), registerWindow))
-		self.ButtonRegister1.grid(row=3, column="1")
+		self.ButtonRegister = tk.Button(registerWindow, text="Register", width=10, height=1, command=lambda: self.registerAccount(self.EntryName.get(), self.EntryLogin.get(), self.EntryPassword.get(), registerWindow))
+		self.ButtonRegister.grid(row=3, column="1")
 
 	def registerAccount(self, name, login, password, registerWindow):
 		if name != "" and login != "" and password != "":
@@ -164,15 +164,68 @@ class MainWindow():
 		tree.insert(pending, 0,text="1733", values=("Locker", "Mall Luton LU1 HUJ", "In progress", "25kg", "25$", "12-10-2017", "13-10-2017"))
 		tree.insert(pending, 0,text="2633", values=("Locker", "Mall Luton LU1 HUJ", "In progress", "25kg", "25$", "12-10-2017", "13-10-2017"))
 
+		historyOrders = tree.insert("", 1, "Orders history", text="Orders history")
+		tree.insert(historyOrders, 0, text="1245",values=("Locker", "Mall Luton LU1 HUJ", "In progress", "25kg", "25$", "12-10-2017", "13-10-2017"))
+		tree.insert(historyOrders, 0, text="1634",values=("Locker", "Mall Luton LU1 HUJ", "In progress", "25kg", "25$", "12-10-2017", "13-10-2017"))
+		tree.insert(historyOrders, 0, text="1733",values=("Locker", "Mall Luton LU1 HUJ", "In progress", "25kg", "25$", "12-10-2017", "13-10-2017"))
+		tree.insert(historyOrders, 0, text="2633",values=("Locker", "Mall Luton LU1 HUJ", "In progress", "25kg", "25$", "12-10-2017", "13-10-2017"))
+
 		##alternatively:
 		# tree.insert("", 3, "dir3", text="Dir 3")
 		# tree.insert("dir3", 3, text=" sub dir 3", values=("3A", " 3B"))
+		tree.grid(row=0,column="0")
 
-		tree.pack()
+		ButtonNewOrder = tk.Button(laundryClientWindow, text="New order", width=10, height=1,command=lambda: self.newOrder())
+		ButtonNewOrder.grid(row=3, column="0")
 
 
 
+	def newOrder(self):
+		newOrderWindow = tk.Toplevel()
+		newOrderWindow.title("New order")
+		self.center(newOrderWindow)
+		newOrderWindow.geometry("300x100")
+		newOrderWindow.grab_set()
 
+		self.LabelMethod = tk.Label(newOrderWindow, text="Choose collection method:")
+		self.LabelMethod.grid(row=0, column="1")
+
+
+		self.ButtonDriver = tk.Button(newOrderWindow, text="Book driver", width=10, height=1, command=lambda :self.setOrderAddress("DRIVER", newOrderWindow))
+		self.ButtonDriver.grid(row=1, column="0")
+
+		self.ButtonLocker = tk.Button(newOrderWindow, text="Deliver to locker", width=10, height=1, command=lambda: self.setOrderAddress("LOCKER", newOrderWindow))
+		self.ButtonLocker.grid(row=1, column="2")
+
+
+
+	def setOrderAddress(self, method, previousWindow):
+		previousWindow.destroy()
+
+		orderAddressWindow = tk.Toplevel()
+		orderAddressWindow.title("New order")
+		self.center(orderAddressWindow)
+		orderAddressWindow.geometry("300x100")
+		orderAddressWindow.grab_set()
+
+		if(method == "LOCKER"):
+			temp = 0
+			self.LabelLocker = tk.Label(orderAddressWindow, text="Choose locker:")
+			self.LabelLocker.grid(row=0, column="0")
+			rb1 = ttk.Radiobutton(orderAddressWindow, text='189 Marsh Rd, Luton LU3 2QQ, UK', variable=temp, value="189 Marsh Rd, Luton LU3 2QQ, UK")
+			rb2 = ttk.Radiobutton(orderAddressWindow, text='146 Park St, Luton LU1 3EY, UK', variable=temp, value="146 Park St, Luton LU1 3EY, UK")
+			rb3 = ttk.Radiobutton(orderAddressWindow, text='152 Dallow Rd, Luton LU4 2EW, UK', variable=temp, value="152 Dallow Rd, Luton LU4 2EW, UK")
+			rb1.grid(row=1, column="0")
+			rb2.grid(row=2, column="0")
+			rb3.grid(row=3, column="0")
+
+			self.ButtonNext = tk.Button(orderAddressWindow, text="Next", width=10, height=1, command=lambda: self.setOrderAddress("DRIVER", orderAddressWindow))
+			self.ButtonNext.grid(row=4, column="0")
+		elif(method == "DRIVER"):
+			temp = 0
+
+	def setOrderDates(self, method, address, previousWindow):
+		print("hu")
 
 	def laundryWorkerWindow(self):
 		laundryWorkerWindow = tk.Toplevel()
