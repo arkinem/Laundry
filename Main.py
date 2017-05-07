@@ -20,7 +20,7 @@ class MainWindow():
 		self.LabelPassword = tk.Label(text="Password : ")
 		self.LabelPassword.grid(row=1, column="0")
 
-		self.EntryPassword = tk.Entry(width="30")
+		self.EntryPassword = tk.Entry(width="30", show="*")
 		self.EntryPassword.grid(row=1, column="1")
 
 		self.ButtonLogin = tk.Button(root, text="Login", width=10, height=1, command=lambda: self.login(self.EntryLogin.get(),self.EntryPassword.get()))
@@ -58,7 +58,7 @@ class MainWindow():
 		self.LabelPassword = tk.Label(registerWindow, text="Password : ")
 		self.LabelPassword.grid(row=2, column="0")
 
-		self.EntryPassword = tk.Entry(registerWindow, width="30")
+		self.EntryPassword = tk.Entry(registerWindow, width="30", show="*")
 		self.EntryPassword.grid(row=2, column="1")
 
 		self.ButtonRegister1 = tk.Button(registerWindow, text="Register", width=10, height=1, command=lambda: self.registerAccount(self.EntryName.get(), self.EntryLogin.get(), self.EntryPassword.get(), registerWindow))
