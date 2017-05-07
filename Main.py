@@ -5,7 +5,7 @@ from functools import partial
 class MainWindow():
 	def __init__(self):
 		root = tk.Tk()
-		root.geometry("300x200")
+		# root.geometry("300x200")
 		root.title("Login")
 
 		# self.window.geometry("290x180")
@@ -36,7 +36,6 @@ class MainWindow():
 		print("You hit return.")
 
 	def registerWindow(self):
-		print("You clicked the button")
 		registerWindow = tk.Toplevel()
 		registerWindow.title("Register")
 		registerWindow.grab_set()
@@ -59,8 +58,15 @@ class MainWindow():
 		self.EntryPassword = tk.Entry(registerWindow, width="30")
 		self.EntryPassword.grid(row=2, column="1")
 
-		self.ButtonRegister = tk.Button(registerWindow, text="Register", width=10, height=1, command=self.registerWindow)
-		self.ButtonRegister.grid(row=3, column="1")
+		self.ButtonRegister1 = tk.Button(registerWindow, text="Register", width=10, height=1, command=lambda: self.registerAccount(self.EntryName.get(), self.EntryLogin.get(), self.EntryPassword.get()))
+		self.ButtonRegister1.grid(row=3, column="1")
+
+	def registerAccount(self, name, login, password):
+		if name != "" and login != "":
+			print("Ok")
+		else:
+			print("Nooo")
+
 
 
 
