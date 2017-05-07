@@ -8,8 +8,8 @@ class MainWindow():
 		root = tk.Tk()
 		# root.geometry("300x200")
 		root.title("Login")
-
-		# self.window.geometry("290x180")
+		self.center(root)
+		root.geometry("275x90")
 
 		self.LabelLogin = tk.Label(text="Login: ")
 		self.LabelLogin.grid(row=0, column="0")
@@ -23,7 +23,7 @@ class MainWindow():
 		self.EntryPassword = tk.Entry(width="30")
 		self.EntryPassword.grid(row=1, column="1")
 
-		self.ButtonLogin = tk.Button(root, text="Login", width=10, height=1)
+		self.ButtonLogin = tk.Button(root, text="Login", width=10, height=1, command=lambda: self.login(self.EntryLogin.get(),self.EntryPassword.get()))
 		self.ButtonLogin.grid(row=2, column="1")
 
 		self.ButtonRegister = tk.Button(root, text="Register", width=10, height=1, command=self.registerWindow)
@@ -39,6 +39,8 @@ class MainWindow():
 	def registerWindow(self):
 		registerWindow = tk.Toplevel()
 		registerWindow.title("Register")
+		self.center(registerWindow)
+		registerWindow.geometry("255x90")
 		registerWindow.grab_set()
 
 		self.LabelName = tk.Label(registerWindow, text="Name: ")
@@ -76,6 +78,30 @@ class MainWindow():
 		else:
 			messagebox.showinfo("Error", "Fields cannot be empty.")
 
+	def center(self, window):
+		window.update_idletasks()
+		width = window.winfo_width()
+		height = window.winfo_height()
+		x = (window.winfo_screenwidth() // 2) - (width // 2)
+		y = (window.winfo_screenheight() // 2) - (height // 2)
+		window.geometry('{}x{}+{}+{}'.format(width, height, x, y))
+
+	def login(self, login, password):
+		if login != "" and password != "":
+			accountFile = open("accounts.txt", "r")
+
+			correctData = False
+
+			for line in accountFile:
+				if(login == line.split(",")[1] and line.split(',')[2]):
+					correctData = True
+
+			if(correctData):
+				print("zalogowany")
+			else:
+				messagebox.showinfo("Error", "Login or password is not correct.")
+		else:
+			messagebox.showinfo("Error", "Fields cannot be empty.")
 
 
 
