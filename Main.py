@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 from functools import partial
+from tkinter import ttk
 
 
 class MainWindow():
@@ -128,11 +129,57 @@ class MainWindow():
 			messagebox.showerror("Error", "Fields cannot be empty.")
 
 
-
 	def laundryClientWindow(self):
-		print("client")
+		laundryClientWindow = tk.Toplevel()
+		laundryClientWindow.title("Laundry System")
+		self.center(laundryClientWindow)
+		laundryClientWindow.geometry("890x250")
+		laundryClientWindow.grab_set()
+
+		tree = ttk.Treeview(laundryClientWindow)
+
+		tree["columns"] = ("Collection method", "Address", "Status", "Weight", "Price", "Collection date", "Delivery date")
+		# tree.column("ID", width=40)
+		tree.column("Collection method", width=100)
+		tree.column("Address", width=150)
+		tree.column("Status", width=70)
+		tree.column("Weight", width=50)
+		tree.column("Price", width=50)
+		tree.column("Collection date", width=100)
+		tree.column("Delivery date", width=100)
+		# tree.heading("ID", text="ID")
+		tree.heading("Collection method", text="Collection method")
+		tree.heading("Address", text="Address")
+		tree.heading("Status", text="Status")
+		tree.heading("Weight", text="Weight")
+		tree.heading("Price", text="Price")
+		tree.heading("Collection date", text="Collection date")
+		tree.heading("Delivery date", text="Delivery date")
+
+		tree.insert("", 0, values=("1A", "1b", "1b", "1b", "1b", "1b", "1b", "1b"))
+
+		pending = tree.insert("", 1, "Pending orders", text="Pending orders")
+		tree.insert(pending, 0,text="1245", values=("Locker", "Mall Luton LU1 HUJ", "In progress", "25kg", "25$", "12-10-2017", "13-10-2017"))
+		tree.insert(pending, 0,text="1634", values=("Locker", "Mall Luton LU1 HUJ", "In progress", "25kg", "25$", "12-10-2017", "13-10-2017"))
+		tree.insert(pending, 0,text="1733", values=("Locker", "Mall Luton LU1 HUJ", "In progress", "25kg", "25$", "12-10-2017", "13-10-2017"))
+		tree.insert(pending, 0,text="2633", values=("Locker", "Mall Luton LU1 HUJ", "In progress", "25kg", "25$", "12-10-2017", "13-10-2017"))
+
+		##alternatively:
+		# tree.insert("", 3, "dir3", text="Dir 3")
+		# tree.insert("dir3", 3, text=" sub dir 3", values=("3A", " 3B"))
+
+		tree.pack()
+
+
+
+
+
 	def laundryWorkerWindow(self):
-		print("worker")
+		laundryWorkerWindow = tk.Toplevel()
+		laundryWorkerWindow.title("Laundry System")
+		self.center(laundryWorkerWindow)
+		laundryWorkerWindow.geometry("400x400")
+		laundryWorkerWindow.grab_set()
 
 
 
