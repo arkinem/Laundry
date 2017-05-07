@@ -5,6 +5,12 @@ from functools import partial
 
 class MainWindow():
 	def __init__(self):
+		try:
+			with open('accounts.txt', "r") as file:
+				pass
+		except IOError as e:
+			open('accounts.txt', "w")
+
 		root = tk.Tk()
 		# root.geometry("300x200")
 		root.title("Login")
@@ -67,16 +73,26 @@ class MainWindow():
 	def registerAccount(self, name, login, password, registerWindow):
 		if name != "" and login != "" and password != "":
 			accountFile = open("accounts.txt", "r")
-			data = accountFile.readlines()
-			accountFile.close()
-			data += name + "," + login + "," + password + ",CLIENT;\n"
-			accountFile = open("accounts.txt", "w")
-			accountFile.writelines(data)
-			accountFile.close()
-			messagebox.showinfo("Success", "Your account has been created.")
-			registerWindow.destroy()
+
+			loginAvailability = True
+
+			for line in accountFile:
+				if(line.split(",")[1] == login):
+					loginAvailability = False
+
+			if(loginAvailability):
+				data = accountFile.readlines()
+				accountFile.close()
+				data += name + "," + login + "," + password + ",CLIENT;\n"
+				accountFile = open("accounts.txt", "w")
+				accountFile.writelines(data)
+				accountFile.close()
+				messagebox.showinfo("Success", "Your account has been created.")
+				registerWindow.destroy()
+			else:
+				messagebox.showerror("Error", "The login you choose is not available. Please try again.")
 		else:
-			messagebox.showinfo("Error", "Fields cannot be empty.")
+			messagebox.showerror("Error", "Fields cannot be empty.")
 
 	def center(self, window):
 		window.update_idletasks()
@@ -97,11 +113,26 @@ class MainWindow():
 					correctData = True
 
 			if(correctData):
-				print("zalogowany")
+				role = line.split(",")[3]
+				role = role[:-2] #delete ; and \n characters
+
+				if(role == "CLIENT"):
+					self.laundryClientWindow()
+				elif(role == "WORKER"):
+					self.laundryWorkerWindow()
+				else:
+					messagebox.showerror("Error","There is a problem with role assigned to your account. Please contact with administrator.")
 			else:
-				messagebox.showinfo("Error", "Login or password is not correct.")
+				messagebox.showerror("Error", "Login or password is not correct.")
 		else:
-			messagebox.showinfo("Error", "Fields cannot be empty.")
+			messagebox.showerror("Error", "Fields cannot be empty.")
+
+
+
+	def laundryClientWindow(self):
+		print("client")
+	def laundryWorkerWindow(self):
+		print("worker")
 
 
 
