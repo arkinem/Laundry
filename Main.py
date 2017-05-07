@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 from functools import partial
 from tkinter import ttk
+import datetime
 
 
 class MainWindow():
@@ -10,7 +11,16 @@ class MainWindow():
 			with open('accounts.txt', "r") as file:
 				pass
 		except IOError as e:
-			open('accounts.txt', "w")
+			file = open('accounts.txt', "w")
+			file.close()
+
+		try:
+			with open('orders.txt', "r") as file:
+				pass
+		except IOError as e:
+			file = open('orders.txt', "w")
+			file.close()
+
 
 		root = tk.Tk()
 		# root.geometry("300x200")
@@ -30,7 +40,7 @@ class MainWindow():
 		self.EntryPassword = tk.Entry(width="30", show="*")
 		self.EntryPassword.grid(row=1, column="1")
 
-		self.ButtonLogin = tk.Button(root, text="Login", width=10, height=1, command=lambda: self.login(self.EntryLogin.get(),self.EntryPassword.get()))
+		self.ButtonLogin = tk.Button(root, text="Login", width=10, height=1, command=lambda: self.login(self.EntryLogin.get(),self.EntryPassword.get(), root))
 		self.ButtonLogin.grid(row=2, column="1")
 
 		self.ButtonRegister = tk.Button(root, text="Register", width=10, height=1, command=self.registerWindow)
@@ -103,7 +113,7 @@ class MainWindow():
 		y = (window.winfo_screenheight() // 2) - (height // 2)
 		window.geometry('{}x{}+{}+{}'.format(width, height, x, y))
 
-	def login(self, login, password):
+	def login(self, login, password, loginWindow):
 		if login != "" and password != "":
 			accountFile = open("accounts.txt", "r")
 
@@ -119,8 +129,10 @@ class MainWindow():
 
 				if(role == "CLIENT"):
 					self.laundryClientWindow()
+					loginWindow.withdraw()
 				elif(role == "WORKER"):
 					self.laundryWorkerWindow()
+					loginWindow.withdraw()
 				else:
 					messagebox.showerror("Error","There is a problem with role assigned to your account. Please contact with administrator.")
 			else:
@@ -175,12 +187,10 @@ class MainWindow():
 		# tree.insert("dir3", 3, text=" sub dir 3", values=("3A", " 3B"))
 		tree.grid(row=0,column="0")
 
-		ButtonNewOrder = tk.Button(laundryClientWindow, text="New order", width=10, height=1,command=lambda: self.newOrder())
+		ButtonNewOrder = tk.Button(laundryClientWindow, text="New order", width=10, height=1,command=lambda: self.setCollectionMethod())
 		ButtonNewOrder.grid(row=3, column="0")
 
-
-
-	def newOrder(self):
+	def setCollectionMethod(self):
 		newOrderWindow = tk.Toplevel()
 		newOrderWindow.title("New order")
 		self.center(newOrderWindow)
@@ -194,10 +204,8 @@ class MainWindow():
 		self.ButtonDriver = tk.Button(newOrderWindow, text="Book driver", width=10, height=1, command=lambda :self.setOrderAddress("DRIVER", newOrderWindow))
 		self.ButtonDriver.grid(row=1, column="0")
 
-		self.ButtonLocker = tk.Button(newOrderWindow, text="Deliver to locker", width=10, height=1, command=lambda: self.setOrderAddress("LOCKER", newOrderWindow))
+		self.ButtonLocker = tk.Button(newOrderWindow, text="Deliver to locker", width=10, height=1, command=lambda:self.setOrderAddress("LOCKER", newOrderWindow))
 		self.ButtonLocker.grid(row=1, column="2")
-
-
 
 	def setOrderAddress(self, method, previousWindow):
 		previousWindow.destroy()
@@ -209,7 +217,7 @@ class MainWindow():
 		orderAddressWindow.grab_set()
 
 		if(method == "LOCKER"):
-			temp = 0
+			temp = tk.StringVar()
 			self.LabelLocker = tk.Label(orderAddressWindow, text="Choose locker:")
 			self.LabelLocker.grid(row=0, column="0")
 			rb1 = ttk.Radiobutton(orderAddressWindow, text='189 Marsh Rd, Luton LU3 2QQ, UK', variable=temp, value="189 Marsh Rd, Luton LU3 2QQ, UK")
@@ -219,13 +227,64 @@ class MainWindow():
 			rb2.grid(row=2, column="0")
 			rb3.grid(row=3, column="0")
 
-			self.ButtonNext = tk.Button(orderAddressWindow, text="Next", width=10, height=1, command=lambda: self.setOrderAddress("DRIVER", orderAddressWindow))
+			self.ButtonNext = tk.Button(orderAddressWindow, text="Next", width=10, height=1, command=lambda: self.setOrderDates("LOCKER",temp.get(),orderAddressWindow))
 			self.ButtonNext.grid(row=4, column="0")
 		elif(method == "DRIVER"):
-			temp = 0
+			self.LabelAddress = tk.Label(orderAddressWindow, text="Address: ")
+			self.LabelAddress.grid(row=0, column="0")
+
+			self.EntryAddress = tk.Entry(orderAddressWindow, width="100")
+			self.EntryAddress.grid(row=0, column="1")
+
+			self.ButtonNext = tk.Button(orderAddressWindow, text="Next", width=10, height=1,command=lambda: self.setOrderDates("DRIVER", self.EntryAddress.get(), orderAddressWindow))
+			self.ButtonNext.grid(row=4, column="0")
 
 	def setOrderDates(self, method, address, previousWindow):
-		print("hu")
+		previousWindow.destroy()
+
+		orderDatesWindow = tk.Toplevel()
+		orderDatesWindow.title("New order")
+		self.center(orderDatesWindow)
+		orderDatesWindow.geometry("300x100")
+		orderDatesWindow.grab_set()
+
+		self.LabelCollectionDate = tk.Label(orderDatesWindow, text="Collection date: ")
+		self.LabelCollectionDate.grid(row=0, column="0")
+
+		self.EntryColDate = tk.Entry(orderDatesWindow, width="100")
+		self.EntryColDate.grid(row=0, column="1")
+
+		self.LabelDeliveryDate = tk.Label(orderDatesWindow, text="Delivery date: ")
+		self.LabelDeliveryDate.grid(row=1, column="0")
+
+		self.EntryDelDate = tk.Entry(orderDatesWindow, width="100")
+		self.EntryDelDate.grid(row=1, column="1")
+
+
+		# ZABEZPIECZYC DATE!!!!!
+		# userdatestring = '2013-05-10'
+		# thedate = datetime.datetime.strptime(userdatestring, '%Y-%m-%d')
+
+		self.ButtonFinish = tk.Button(orderDatesWindow, text="Finish", width=10, height=1,command=lambda: self.newOrder(method,address, self.EntryColDate.get(), self.EntryDelDate.get(), orderDatesWindow))
+		self.ButtonFinish.grid(row=2, column="0")
+
+	def newOrder(self,method, address, dateCollection, dateDelivery, previousWindow):
+		previousWindow.destroy()
+
+		ordersFile = open("orders.txt", "r")
+		tempData = ordersFile.readlines()
+		ordersFile.close()
+
+		tempData += str(len(tempData)+1) +","+ method +","+ address +",Waiting for collection,,," + dateCollection +","+ dateDelivery +";\n"
+
+		ordersFile = open("orders.txt", "w")
+		ordersFile.writelines(tempData)
+		ordersFile.close()
+
+		messagebox.showinfo("Success", "Your order has been accepted.")
+
+
+
 
 	def laundryWorkerWindow(self):
 		laundryWorkerWindow = tk.Toplevel()
