@@ -43,10 +43,12 @@ class MainWindow():
 		self.EntryPassword.grid(row=1, column="1")
 
 		self.ButtonLogin = tk.Button(root, text="Login", width=10, height=1, command=lambda: self.login(self.EntryLogin.get(),self.EntryPassword.get(), root))
-		self.ButtonLogin.grid(row=2, column="1")
+		# self.ButtonLogin.grid(row=2, column="1")
+		self.ButtonLogin.place(x=170, y=50, height=28, width=85)
 
 		self.ButtonRegister = tk.Button(root, text="Register", width=10, height=1, command=self.registerWindow)
-		self.ButtonRegister.grid(row=2, column="0")
+		# self.ButtonRegister.grid(row=2, column="2")
+		self.ButtonRegister.place(x=40, y=50, height=28, width=85)
 
 		root.bind('<Return>', self.func())
 
@@ -82,6 +84,7 @@ class MainWindow():
 
 		self.ButtonRegister = tk.Button(registerWindow, text="Register", width=10, height=1, command=lambda: self.registerAccount(self.EntryName.get(), self.EntryLogin.get(), self.EntryPassword.get(), registerWindow))
 		self.ButtonRegister.grid(row=3, column="1")
+		# self.ButtonRegister.place(x=40, y=80, height=28, width=85)
 
 	def registerAccount(self, name, login, password, registerWindow):
 		if name != "" and login != "" and password != "":
@@ -122,13 +125,15 @@ class MainWindow():
 			correctData = False
 
 			for line in accountFile:
+				print(line)
 				if(login == line.split(",")[1] and line.split(',')[2]):
 					correctData = True
 
 			if(correctData):
 				self.login = login
 				role = line.split(",")[3]
-				role = role[:-2] #delete ; and \n characters
+				role = role[:-1] #delete ; and \n characters
+				print(role)
 
 				if(role == "CLIENT"):
 					self.laundryClientWindow()
